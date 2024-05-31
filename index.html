@@ -32,12 +32,8 @@
 
   <script>
     function updatePotentiometerValue() {
-      fetch('https://medard-maka.github.io/ketsia/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'potValue=' + encodeURIComponent(Math.floor(Math.random() * 1024))
+      fetch('https://medard-maka.github.io/ketsia/?potValue=' + encodeURIComponent(Math.floor(Math.random() * 1024)), {
+        method: 'GET'
       })
       .then(response => response.text())
       .then(data => {
