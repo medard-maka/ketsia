@@ -1,71 +1,54 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Potentiometer Web Interface</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        h1 {
-            margin-top: 0;
-        }
-        
-        .container {
-            width: 300px;
-            margin: 0 auto;
-        }
-        
-        .potentiometer-value {
-            font-size: 48px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
+  <title>Potentiometer Web Interface</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
+    }
+    .container {
+      margin-top: 50px;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    #potValue {
+      font-size: 60px;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+  </style>
 </head>
-
 <body>
-    <h1>Potentiometer Web Interface</h1>
-    <div class="container">
-        <div class="potentiometer-value">0</div>
-    </div>
+  <div class="container">
+    <h1>Potentiometer Value</h1>
+    <div id="potValue">0</div>
+  </div>
 
-    <script>
-        // Configuration de l'URL de l'interface web
-        const serverUrl = 'https://medard-maka.github.io/ketsia/';
+  <script>
+    function updatePotentiometerValue() {
+      fetch('https://medard-maka.github.io/ketsia/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'potValue=' + encodeURIComponent(Math.floor(Math.random() * 1024))
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('potValue').textContent = data;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
 
-        // Fonction pour mettre à jour la valeur du potentiomètre
-        function updatePotentiometerValue(value) {
-            document.querySelector('.potentiometer-value').textContent = value;
-        }
-
-        // Fonction pour récupérer les données du potentiomètre
-        function fetchPotentiometerData() {
-            fetch(serverUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        potentiometerValue: 0
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    updatePotentiometerValue(data.potentiometerValue);
-                })
-                .catch(error => {
-                    console.error('Error fetching potentiometer data:', error);
-                });
-        }
-
-        // Mise à jour de la valeur du potentiomètre toutes les secondes
-        setInterval(fetchPotentiometerData, 1000);
-    </script>
+    setInterval(updatePotentiometerValue, 1000);
+  </script>
 </body>
-
 </html>
