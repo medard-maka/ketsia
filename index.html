@@ -2,22 +2,57 @@
 <html>
 <head>
   <title>Potentiometer Value</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .potentiometer-value {
+      font-size: 48px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Potentiometer Value</h1>
-  <p id="potValue">0</p>
+  <div class="container">
+    <h1>Potentiometer Value</h1>
+    <div class="potentiometer-value">0</div>
+  </div>
 
   <script>
-    function updatePotValue() {
-      fetch('/') // Réception des données envoyées par l'ESP32
+    function updatePotentiometerValue() {
+      fetch('https://medard-maka.github.io/ketsia/')
         .then(response => response.text())
         .then(data => {
-          document.getElementById('potValue').textContent = data;
-          setTimeout(updatePotValue, 100); // Mise à jour toutes les 100ms
+          const potentiometerValue = parseInt(data);
+          document.querySelector('.potentiometer-value').textContent = potentiometerValue;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.querySelector('.potentiometer-value').textContent = 'Error';
         });
     }
 
-    updatePotValue();
+    setInterval(updatePotentiometerValue, 1000);
   </script>
 </body>
 </html>
