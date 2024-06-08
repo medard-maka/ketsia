@@ -20,6 +20,7 @@
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       text-align: center;
+      width: 400px;
     }
 
     h1 {
@@ -33,12 +34,39 @@
       color: #4CAF50;
       margin-top: 20px;
     }
+
+    #owner-name {
+      margin-top: 20px;
+    }
+
+    #date-time {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>ID de la carte RFID</h1>
     <p id="card-id"></p>
+    <input type="text" id="owner-name" placeholder="Nom du propriétaire">
+    <p id="date-time"></p>
+    <button id="submit-btn">Valider</button>
   </div>
 
   <script>
@@ -51,11 +79,30 @@
     function updateCardId() {
       $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
         $("#card-id").text("ID de la carte RFID : " + data.field1);
+        updateDateTime(data.created_at);
       });
+    }
+
+    // Fonction pour mettre à jour la date et l'heure
+    function updateDateTime(createdAt) {
+      var dateTime = new Date(createdAt).toLocaleString();
+      $("#date-time").text("Date et heure : " + dateTime);
+    }
+
+    // Fonction pour enregistrer le nom du propriétaire dans la base de données
+    function saveOwnerName() {
+      var ownerName = $("#owner-name").val();
+      if (ownerName) {
+        // Ici, vous devriez ajouter le code pour enregistrer le nom dans la base de données
+        alert("Nom du propriétaire enregistré : " + ownerName);
+      }
     }
 
     // Mise à jour de l'ID de la carte toutes les 5 secondes
     setInterval(updateCardId, 5000);
+
+    // Événement de clic sur le bouton "Valider"
+    $("#submit-btn").click(saveOwnerName);
   </script>
 </body>
 </html>
