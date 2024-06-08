@@ -3,7 +3,6 @@
 <head>
   <title>Affichage de l'ID RFID</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
       background-color: #f9f9f9;
@@ -55,13 +54,9 @@
     <p id="card-id"></p>
     <p id="owner-name"></p>
     <p id="date-time"></p>
-    <div class="form-group">
-      <label for="owner-name-input">Nom du propriétaire :</label>
-      <input type="text" class="form-control" id="owner-name-input" placeholder="Entrez le nom du propriétaire">
-    </div>
-    <button class="btn btn-primary" id="submit-btn">Valider</button>
+    <button id="submit-btn">Valider</button>
 
-    <table class="table table-striped">
+    <table id="records-table">
       <thead>
         <tr>
           <th>ID</th>
@@ -74,8 +69,86 @@
   </div>
 
   <script>
-    // Code JavaScript similaire à la version précédente
-    // ...
+    // Paramètres ThingSpeak
+    var channelId = 2572384;
+    var apiKey = "BGMFDPDQNOKGCHYQ";
+    var fieldId = 1; // Champ où est stocké l'ID de la carte RFID
+
+    // Variable pour stocker les enregistrements
+    var records = [];
+
+    // Fonction pour récupérer et afficher l'ID de la carte RFID
+    function updateCardId() {
+      $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
+        var cardId = data.field1;
+        $("#card-id").text("ID de la carte RFID : " + cardId);
+
+        // Vérifier si l'ID est déjà enregistré
+        var existingRecord = records.find(function(record) {
+          return record.id === cardId;
+        });
+
+        if (existingRecord) {
+          // Afficher le nom du propriétaire
+          $("#owner-name").text("Propriétaire : " + existingRecord.ownerName);
+        } else {
+          // Cacher le nom du propriétaire
+          $("#owner-name").text("");
+
+          // Ajouter un nouvel enregistrement
+          var newRecord = {
+            id: cardId,
+            ownerName: "",
+            dateTime: new Date(data.created_at).toLocaleString()
+          };
+          records.push(newRecord);
+          updateRecordsTable();
+        }
+
+        updateDateTime(data.created_at);
+      });
+    }
+
+    // Fonction pour mettre à jour la date et l'heure
+    function updateDateTime(createdAt) {
+      var dateTime = new Date(createdAt).toLocaleString();
+      $("#date-time").text("Date et heure : " + dateTime);
+    }
+
+    // Fonction pour enregistrer le nom du propriétaire dans les enregistrements
+    function saveOwnerName() {
+      var ownerName = $("#owner-name").val();
+      var cardId = $("#card-id").text().split(": ")[1];
+
+      var record = records.find(function(r) {
+        return r.id === cardId;
+      });
+
+      if (record) {
+        record.ownerName = ownerName;
+        updateRecordsTable();
+      }
+    }
+
+    // Fonction pour mettre à jour le tableau des enregistrements
+    function updateRecordsTable() {
+      var tableBody = $("#records-body");
+      tableBody.empty();
+
+      records.forEach(function(record) {
+        var row = $("<tr>");
+        $("<td>").text(record.id).appendTo(row);
+        $("<td>").text(record.ownerName).appendTo(row);
+        $("<td>").text(record.dateTime).appendTo(row);
+        row.appendTo(tableBody);
+      });
+    }
+
+    // Mise à jour de l'ID de la carte toutes les 5 secondes
+    setInterval(updateCardId, 5000);
+
+    // Événement de clic sur le bouton "Valider"
+    $("#submit-btn").click(saveOwnerName);
   </script>
 </body>
 </html>
