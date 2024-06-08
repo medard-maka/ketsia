@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Potentiometer Value</title>
+  <title>Affichage de l'ID RFID</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #f0f0f0;
-      font-family: Arial, sans-serif;
     }
 
     .container {
       background-color: white;
-      padding: 40px;
+      padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       text-align: center;
@@ -23,36 +24,38 @@
 
     h1 {
       margin-top: 0;
+      color: #333;
     }
 
-    .potentiometer-value {
-      font-size: 48px;
+    #card-id {
+      font-size: 24px;
       font-weight: bold;
+      color: #4CAF50;
       margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Potentiometer Value</h1>
-    <div class="potentiometer-value">0</div>
+    <h1>ID de la carte RFID</h1>
+    <p id="card-id"></p>
   </div>
 
   <script>
-    function updatePotentiometerValue() {
-      fetch('https://medard-maka.github.io/ketsia/')
-        .then(response => response.text())
-        .then(data => {
-          const potentiometerValue = parseInt(data);
-          document.querySelector('.potentiometer-value').textContent = potentiometerValue;
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          document.querySelector('.potentiometer-value').textContent = 'Error';
-        });
+    // Paramètres ThingSpeak
+    var channelId = 2572384;
+    var apiKey = "BGMFDPDQNOKGCHYQ";
+    var fieldId = 1; // Champ où est stocké l'ID de la carte RFID
+
+    // Fonction pour récupérer et afficher l'ID de la carte RFID
+    function updateCardId() {
+      $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
+        $("#card-id").text("ID de la carte RFID : " + data.field1);
+      });
     }
 
-    setInterval(updatePotentiometerValue, 1000);
+    // Mise à jour de l'ID de la carte toutes les 5 secondes
+    setInterval(updateCardId, 5000);
   </script>
 </body>
 </html>
