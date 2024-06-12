@@ -5,17 +5,19 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     body {
-      background-color: #f9f9f9;
-      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
     .container {
       max-width: 800px;
-      margin-top: 50px;
-      padding: 30px;
+      margin: 50px auto;
       background-color: white;
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      padding: 40px;
     }
 
     h1 {
@@ -24,23 +26,48 @@
       color: #333;
     }
 
-    #card-id, #owner-name, #date-time {
+    .card-info, #date-time {
       font-size: 18px;
+      margin-bottom: 15px;
       font-weight: bold;
-      margin-bottom: 10px;
+    }
+
+    #owner-name {
+      font-size: 18px;
+      margin-bottom: 30px;
     }
 
     #submit-btn {
       display: block;
-      margin: 20px auto;
+      margin: 30px auto 0;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
     }
 
     table {
-      margin-top: 30px;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
     }
 
     thead th {
       background-color: #f1f1f1;
+      padding: 12px;
+      text-align: left;
+    }
+
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
     }
 
     tbody tr:nth-child(even) {
@@ -51,9 +78,9 @@
 <body>
   <div class="container">
     <h1>ID de la carte RFID</h1>
-    <p id="card-id"></p>
-    <p id="owner-name"></p>
-    <p id="date-time"></p>
+    <div class="card-info" id="card-id"></div>
+    <div id="owner-name"></div>
+    <div id="date-time"></div>
     <button id="submit-btn">Valider</button>
 
     <table id="records-table">
