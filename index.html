@@ -11,12 +11,8 @@
         <table id="records-table">
             <thead>
                 <tr>
-                    <th>ID1</th>
-                    <th>ID2</th>
-                    <th>ID3</th>
-                    <th>ID4</th>
-                    <th>ID5</th>
-                    <th>ID6</th>
+                    <th>ID</th>
+                    <th>Valeur</th>
                 </tr>
             </thead>
             <tbody id="records-body"></tbody>
@@ -30,14 +26,7 @@
         var fieldIds = [1, 2, 3, 4, 5, 6]; // Champs où sont stockés les ID
 
         // Variable pour stocker les enregistrements
-        var records = [
-            [], // Pour stocker les valeurs du champ 1
-            [], // Pour stocker les valeurs du champ 2
-            [], // Pour stocker les valeurs du champ 3
-            [], // Pour stocker les valeurs du champ 4
-            [], // Pour stocker les valeurs du champ 5
-            [], // Pour stocker les valeurs du champ 6
-        ];
+        var records = [];
 
         // Fonction pour récupérer et afficher les ID
         function updateRecords() {
@@ -45,7 +34,10 @@
             for (var i = 0; i < fieldIds.length; i++) {
                 var fieldId = fieldIds[i];
                 var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
-                    records[fieldId - 1].push(data.field1); // Stockage dans le tableau correspondant
+                    records.push({
+                        id: "ID" + (fieldId),
+                        value: data.field1
+                    });
                     updateRecordsTable();
                 }).fail(function() {
                     console.error("Erreur lors de la récupération des données pour le champ", fieldId);
@@ -61,11 +53,12 @@
             var tbody = $("#records-body");
             tbody.empty();
 
-            var row = $("<tr>");
-            for (var i = 0; i < records.length; i++) {
-                row.append($("<td>").text(records[i][records[i].length - 1] || "")); // Affichage de la dernière valeur de chaque champ
-            }
-            tbody.append(row);
+            records.forEach(function(record) {
+                var row = $("<tr>");
+                row.append($("<td>").text(record.id));
+                row.append($("<td>").text(record.value));
+                tbody.append(row);
+            });
         }
 
         // Mise à jour des ID toutes les 5 secondes
