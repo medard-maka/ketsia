@@ -42,6 +42,8 @@
                     newRecord["id" + data.field] = data.field1;
                     records.push(newRecord);
                     updateRecordsTable();
+                }).fail(function() {
+                    console.error("Erreur lors de la récupération des données pour le champ", fieldId);
                 });
                 promises.push(promise);
             }
@@ -54,14 +56,13 @@
             var tbody = $("#records-body");
             tbody.empty();
 
-            var lastRecord = records[records.length - 1];
-            if (lastRecord) {
+            records.forEach(function(record) {
                 var row = $("<tr>");
                 for (var i = 1; i <= fieldIds.length; i++) {
-                    row.append($("<td>").text(lastRecord["id" + i] || ""));
+                    row.append($("<td>").text(record["id" + i] || ""));
                 }
                 tbody.append(row);
-            }
+            });
         }
 
         // Mise à jour des ID toutes les 5 secondes
