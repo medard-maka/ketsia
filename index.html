@@ -10,27 +10,27 @@
     <div class="container">
         <table id="records-table">
             <thead>
-
-                <tbody id="records-body">
-                    <tr id="field-names">
-                        <td>C</td>
-                        <td>F1</td>
-                        <td>F2</td>
-                        <td>F3</td>
-                        <td>F4</td>
-                        <td>F5</td>
-                        <td>F6</td>
-                    </tr>
-                    <tr id="field-values">
-                        <td>Valeurs</td>
-                        <td> R1</td>
-                        <td>R2</td>
-                        <td>R3</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
+                <tr>
+                    <th>Champs</th>
+                    <td>Field1</td>
+                    <td>Field2</td>
+                    <td>Field3</td>
+                    <td>Field4</td>
+                    <td>Field5</td>
+                    <td>Field6</td>
+                </tr>
+            </thead>
+            <tbody id="records-body">
+                <tr>
+                    <th>Valeurs</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
         </table>
     </div>
 
@@ -52,7 +52,7 @@
                     data.feeds[0].field6
                 ];
 
-                $("#field-values td:not(:first-child)").each(function(index) {
+                $("#records-body td").each(function(index) {
                     $(this).text(fieldValues[index]);
                 });
             }).fail(function() {
@@ -61,7 +61,7 @@
         }
 
         // Mise à jour des ID toutes les 5 secondes
-        setInterval(updateRecords, 1000);
+        setInterval(updateRecords, 5000);
     </script>
 </body>
 
