@@ -9,25 +9,33 @@
 <body>
     <div class="container">
         <table id="records-table">
-            <thead>
-                <tr>
-                    <th>Champs</th>
-                    <td>Field1</td>
-                    <td>Field2</td>
-                    <td>Field3</td>
-                    <td>Field4</td>
-                    <td>Field5</td>
-                    <td>Field6</td>
-                </tr>
-            </thead>
             <tbody id="records-body">
                 <tr>
+                    <th>Champs</th>
                     <th>Valeurs</th>
+                </tr>
+                <tr>
+                    <td>Field1</td>
                     <td></td>
+                </tr>
+                <tr>
+                    <td>Field2</td>
                     <td></td>
+                </tr>
+                <tr>
+                    <td>Field3</td>
                     <td></td>
+                </tr>
+                <tr>
+                    <td>Field4</td>
                     <td></td>
+                </tr>
+                <tr>
+                    <td>Field5</td>
                     <td></td>
+                </tr>
+                <tr>
+                    <td>Field6</td>
                     <td></td>
                 </tr>
             </tbody>
@@ -52,7 +60,7 @@
                     data.feeds[0].field6
                 ];
 
-                $("#records-body td").each(function(index) {
+                $("#records-body tr:gt(0) td:last-child").each(function(index) {
                     $(this).text(fieldValues[index]);
                 });
             }).fail(function() {
