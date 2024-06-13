@@ -38,14 +38,15 @@
             for (var i = 0; i < fieldIds.length; i++) {
                 var fieldId = fieldIds[i];
                 var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
-                    var newRecord = records[records.length - 1] || {};
-                    newRecord["id" + (data.field) ] = data.field1;
+                    var newRecord = {};
+                    newRecord["id" + data.field] = data.field1;
                     records.push(newRecord);
+                    updateRecordsTable();
                 });
                 promises.push(promise);
             }
             $.when.apply($, promises).done(function() {
-                updateRecordsTable();
+                // Traitement supplémentaire si nécessaire
             });
         }
 
@@ -53,13 +54,14 @@
             var tbody = $("#records-body");
             tbody.empty();
 
-            records.forEach(function(record) {
+            var lastRecord = records[records.length - 1];
+            if (lastRecord) {
                 var row = $("<tr>");
                 for (var i = 1; i <= fieldIds.length; i++) {
-                    row.append($("<td>").text(record["id" + i] || ""));
+                    row.append($("<td>").text(lastRecord["id" + i] || ""));
                 }
                 tbody.append(row);
-            });
+            }
         }
 
         // Mise à jour des ID toutes les 5 secondes
