@@ -1,181 +1,80 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Affichage de l'ID RFID</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    body {
-      background-color: #f4f4f4;
-      font-family: 'Roboto', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 50px auto;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      padding: 40px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #333;
-    }
-
-    .card-info, #date-time {
-      font-size: 18px;
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-
-    #owner-name {
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
-
-    #submit-btn {
-      display: block;
-      margin: 30px auto 0;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 12px 24px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    #submit-btn:hover {
-      background-color: #45a049;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 40px;
-    }
-
-    thead th {
-      background-color: #f1f1f1;
-      padding: 12px;
-      text-align: left;
-    }
-
-    tbody td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-  </style>
+    <title>Affichage de l'ID RFID</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
-  <div class="container">
-    <h1>ID de la carte RFID</h1>
-    <div class="card-info" id="card-id"></div>
-    <div id="owner-name"></div>
-    <div id="date-time"></div>
-    <button id="submit-btn">Valider</button>
+    <div class="container">
+        <table id="records-table">
+            <thead>
+                <tr>
+                    <th>ID 1</th>
+                    <th>ID 2</th>
+                    <th>ID 3</th>
+                    <th>ID 4</th>
+                    <th>ID 5</th>
+                    <th>ID 6</th>
+                </tr>
+            </thead>
+            <tbody id="records-body"></tbody>
+        </table>
+    </div>
 
-    <table id="records-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nom du propriétaire</th>
-          <th>Date et heure</th>
-        </tr>
-      </thead>
-      <tbody id="records-body"></tbody>
-    </table>
-  </div>
+    <script>
+        // Paramètres ThingSpeak
+        var channelId = 2572384;
+        var apiKey = "BGMFDPDQNOKGCHYQ";
+        var fieldIds = [1, 2, 3, 4, 5, 6]; // Champs où sont stockés les ID
 
-  <script>
-    // Paramètres ThingSpeak
-    var channelId = 2572384;
-    var apiKey = "BGMFDPDQNOKGCHYQ";
-    var fieldId = 1; // Champ où est stocké l'ID de la carte RFID
+        // Variable pour stocker les enregistrements
+        var records = [];
 
-    // Variable pour stocker les enregistrements
-    var records = [];
-
-    // Fonction pour récupérer et afficher l'ID de la carte RFID
-    function updateCardId() {
-      $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
-        var cardId = data.field1;
-        $("#card-id").text("ID de la carte RFID : " + cardId);
-
-        // Vérifier si l'ID est déjà enregistré
-        var existingRecord = records.find(function(record) {
-          return record.id === cardId;
-        });
-
-        if (existingRecord) {
-          // Afficher le nom du propriétaire
-          $("#owner-name").text("Propriétaire : " + existingRecord.ownerName);
-        } else {
-          // Cacher le nom du propriétaire
-          $("#owner-name").text("");
-
-          // Ajouter un nouvel enregistrement
-          var newRecord = {
-            id: cardId,
-            ownerName: "",
-            dateTime: new Date(data.created_at).toLocaleString()
-          };
-          records.push(newRecord);
-          updateRecordsTable();
+        // Fonction pour récupérer et afficher les ID
+        function updateRecords() {
+            $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/1/last.json?api_key=" + apiKey, function(data1) {
+                $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/2/last.json?api_key=" + apiKey, function(data2) {
+                    $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/3/last.json?api_key=" + apiKey, function(data3) {
+                        $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/4/last.json?api_key=" + apiKey, function(data4) {
+                            $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/5/last.json?api_key=" + apiKey, function(data5) {
+                                $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/6/last.json?api_key=" + apiKey, function(data6) {
+                                    var newRecord = {
+                                        id1: data1.field1,
+                                        id2: data2.field1,
+                                        id3: data3.field1,
+                                        id4: data4.field1,
+                                        id5: data5.field1,
+                                        id6: data6.field1
+                                    };
+                                    records.push(newRecord);
+                                    updateRecordsTable();
+                                });
+                            });
+                        });
+                    });
+                });
+            });
         }
 
-        updateDateTime(data.created_at);
-      });
-    }
+        function updateRecordsTable() {
+            var tbody = $("#records-body");
+            tbody.empty();
 
-    // Fonction pour mettre à jour la date et l'heure
-    function updateDateTime(createdAt) {
-      var dateTime = new Date(createdAt).toLocaleString();
-      $("#date-time").text("Date et heure : " + dateTime);
-    }
+            records.forEach(function(record) {
+                var row = $("<tr>");
+                row.append($("<td>").text(record.id1));
+                row.append($("<td>").text(record.id2));
+                row.append($("<td>").text(record.id3));
+                row.append($("<td>").text(record.id4));
+                row.append($("<td>").text(record.id5));
+                row.append($("<td>").text(record.id6));
+                tbody.append(row);
+            });
+        }
 
-    // Fonction pour enregistrer le nom du propriétaire dans les enregistrements
-    function saveOwnerName() {
-      var ownerName = $("#owner-name").val();
-      var cardId = $("#card-id").text().split(": ")[1];
-
-      var record = records.find(function(r) {
-        return r.id === cardId;
-      });
-
-      if (record) {
-        record.ownerName = ownerName;
-        updateRecordsTable();
-      }
-    }
-
-    // Fonction pour mettre à jour le tableau des enregistrements
-    function updateRecordsTable() {
-      var tableBody = $("#records-body");
-      tableBody.empty();
-
-      records.forEach(function(record) {
-        var row = $("<tr>");
-        $("<td>").text(record.id).appendTo(row);
-        $("<td>").text(record.ownerName).appendTo(row);
-        $("<td>").text(record.dateTime).appendTo(row);
-        row.appendTo(tableBody);
-      });
-    }
-
-    // Mise à jour de l'ID de la carte toutes les 5 secondes
-    setInterval(updateCardId, 5000);
-
-    // Événement de clic sur le bouton "Valider"
-    $("#submit-btn").click(saveOwnerName);
-  </script>
+        // Mise à jour des ID toutes les 5 secondes
+        setInterval(updateRecords, 5000);
+    </script>
 </body>
-</html>
