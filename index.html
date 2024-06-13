@@ -20,7 +20,26 @@
                     <th>Field6</th>
                 </tr>
             </thead>
-            <tbody id="records-body"></tbody>
+            <tbody id="records-body">
+                <tr id="field-names">
+                    <td>Champs</td>
+                    <td>Field1</td>
+                    <td>Field2</td>
+                    <td>Field3</td>
+                    <td>Field4</td>
+                    <td>Field5</td>
+                    <td>Field6</td>
+                </tr>
+                <tr id="field-values">
+                    <td>Valeurs</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
         </table>
     </div>
 
@@ -30,49 +49,23 @@
         var apiKey = "BGMFDPDQNOKGCHYQ";
         var fieldIds = [1, 2, 3, 4, 5, 6]; // Champs où sont stockés les ID
 
-        // Variable pour stocker les enregistrements
-        var records = [];
-
         // Fonction pour récupérer et afficher les ID
         function updateRecords() {
-            var promises = [];
-            for (var i = 0; i < fieldIds.length; i++) {
-                var fieldId = fieldIds[i];
-                var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
-                    records.push({
-                        id: "ID" + (records.length + 1),
-                        field1: data.field1,
-                        field2: data.field2,
-                        field3: data.field3,
-                        field4: data.field4,
-                        field5: data.field5,
-                        field6: data.field6
-                    });
-                    updateRecordsTable();
-                }).fail(function() {
-                    console.error("Erreur lors de la récupération des données pour le champ", fieldId);
+            $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/feeds.json?api_key=" + apiKey + "&results=1", function(data) {
+                var fieldValues = [
+                    data.feeds[0].field1,
+                    data.feeds[0].field2,
+                    data.feeds[0].field3,
+                    data.feeds[0].field4,
+                    data.feeds[0].field5,
+                    data.feeds[0].field6
+                ];
+
+                $("#field-values td:not(:first-child)").each(function(index) {
+                    $(this).text(fieldValues[index]);
                 });
-                promises.push(promise);
-            }
-            $.when.apply($, promises).done(function() {
-                // Traitement supplémentaire si nécessaire
-            });
-        }
-
-        function updateRecordsTable() {
-            var tbody = $("#records-body");
-            tbody.empty();
-
-            records.forEach(function(record) {
-                var row = $("<tr>");
-                row.append($("<td>").text(record.id));
-                row.append($("<td>").text(record.field1));
-                row.append($("<td>").text(record.field2));
-                row.append($("<td>").text(record.field3));
-                row.append($("<td>").text(record.field4));
-                row.append($("<td>").text(record.field5));
-                row.append($("<td>").text(record.field6));
-                tbody.append(row);
+            }).fail(function() {
+                console.error("Erreur lors de la récupération des données");
             });
         }
 
