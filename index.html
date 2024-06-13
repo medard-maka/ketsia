@@ -27,21 +27,26 @@
         // Paramètres ThingSpeak
         var channelId = 2572384;
         var apiKey = "BGMFDPDQNOKGCHYQ";
+        var fieldIds = [1, 2, 3, 4, 5, 6]; // Champs où sont stockés les ID
 
         // Variable pour stocker les enregistrements
         var records = [];
 
         // Fonction pour récupérer et afficher les ID
         function updateRecords() {
-            $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/feeds.json?api_key=" + apiKey + "&results=1", function(data) {
-                var newRecord = {};
-                for (var i = 0; i < data.feeds[0].field1.length; i++) {
-                    newRecord["id" + (i + 1)] = data.feeds[0].field1[i];
-                }
-                records.push(newRecord);
-                updateRecordsTable();
-            }).fail(function() {
-                console.error("Erreur lors de la récupération des données");
+            var promises = [];
+            for (var i = 0; i < fieldIds.length; i++) {
+                var fieldId = fieldIds[i];
+                var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
+                    records.push(data.field1);
+                    updateRecordsTable();
+                }).fail(function() {
+                    console.error("Erreur lors de la récupération des données pour le champ", fieldId);
+                });
+                promises.push(promise);
+            }
+            $.when.apply($, promises).done(function() {
+                // Traitement supplémentaire si nécessaire
             });
         }
 
@@ -49,13 +54,11 @@
             var tbody = $("#records-body");
             tbody.empty();
 
-            records.forEach(function(record) {
-                var row = $("<tr>");
-                for (var i = 1; i <= 6; i++) {
-                    row.append($("<td>").text(record["id" + i] || ""));
-                }
-                tbody.append(row);
+            var row = $("<tr>");
+            records.forEach(function(value) {
+                row.append($("<td>").text(value));
             });
+            tbody.append(row);
         }
 
         // Mise à jour des ID toutes les 5 secondes
