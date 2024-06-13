@@ -30,7 +30,14 @@
         var fieldIds = [1, 2, 3, 4, 5, 6]; // Champs où sont stockés les ID
 
         // Variable pour stocker les enregistrements
-        var records = [];
+        var records = [
+            [], // Pour stocker les valeurs du champ 1
+            [], // Pour stocker les valeurs du champ 2
+            [], // Pour stocker les valeurs du champ 3
+            [], // Pour stocker les valeurs du champ 4
+            [], // Pour stocker les valeurs du champ 5
+            [], // Pour stocker les valeurs du champ 6
+        ];
 
         // Fonction pour récupérer et afficher les ID
         function updateRecords() {
@@ -38,7 +45,7 @@
             for (var i = 0; i < fieldIds.length; i++) {
                 var fieldId = fieldIds[i];
                 var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
-                    records.push(data.field1);
+                    records[fieldId - 1].push(data.field1); // Stockage dans le tableau correspondant
                     updateRecordsTable();
                 }).fail(function() {
                     console.error("Erreur lors de la récupération des données pour le champ", fieldId);
@@ -55,9 +62,9 @@
             tbody.empty();
 
             var row = $("<tr>");
-            records.forEach(function(value) {
-                row.append($("<td>").text(value));
-            });
+            for (var i = 0; i < records.length; i++) {
+                row.append($("<td>").text(records[i][records[i].length - 1] || "")); // Affichage de la dernière valeur de chaque champ
+            }
             tbody.append(row);
         }
 
