@@ -34,27 +34,18 @@
 
         // Fonction pour récupérer et afficher les ID
         function updateRecords() {
-            $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/1/last.json?api_key=" + apiKey, function(data1) {
-                $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/2/last.json?api_key=" + apiKey, function(data2) {
-                    $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/3/last.json?api_key=" + apiKey, function(data3) {
-                        $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/4/last.json?api_key=" + apiKey, function(data4) {
-                            $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/5/last.json?api_key=" + apiKey, function(data5) {
-                                $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/6/last.json?api_key=" + apiKey, function(data6) {
-                                    var newRecord = {
-                                        id1: data1.field1,
-                                        id2: data2.field1,
-                                        id3: data3.field1,
-                                        id4: data4.field1,
-                                        id5: data5.field1,
-                                        id6: data6.field1
-                                    };
-                                    records.push(newRecord);
-                                    updateRecordsTable();
-                                });
-                            });
-                        });
-                    });
+            var promises = [];
+            for (var i = 0; i < fieldIds.length; i++) {
+                var fieldId = fieldIds[i];
+                var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
+                    var newRecord = records[records.length - 1] || {};
+                    newRecord["id" + (data.field) ] = data.field1;
+                    records.push(newRecord);
                 });
+                promises.push(promise);
+            }
+            $.when.apply($, promises).done(function() {
+                updateRecordsTable();
             });
         }
 
@@ -64,12 +55,9 @@
 
             records.forEach(function(record) {
                 var row = $("<tr>");
-                row.append($("<td>").text(record.id1));
-                row.append($("<td>").text(record.id2));
-                row.append($("<td>").text(record.id3));
-                row.append($("<td>").text(record.id4));
-                row.append($("<td>").text(record.id5));
-                row.append($("<td>").text(record.id6));
+                for (var i = 1; i <= fieldIds.length; i++) {
+                    row.append($("<td>").text(record["id" + i] || ""));
+                }
                 tbody.append(row);
             });
         }
@@ -78,3 +66,5 @@
         setInterval(updateRecords, 5000);
     </script>
 </body>
+
+</html>
