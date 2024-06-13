@@ -11,7 +11,7 @@
         <table id="records-table">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>ID</th>
                     <th>Field1</th>
                     <th>Field2</th>
                     <th>Field3</th>
@@ -31,14 +31,7 @@
         var fieldIds = [1, 2, 3, 4, 5, 6]; // Champs où sont stockés les ID
 
         // Variable pour stocker les enregistrements
-        var records = [
-            [], // Pour stocker les valeurs du champ 1
-            [], // Pour stocker les valeurs du champ 2
-            [], // Pour stocker les valeurs du champ 3
-            [], // Pour stocker les valeurs du champ 4
-            [], // Pour stocker les valeurs du champ 5
-            [], // Pour stocker les valeurs du champ 6
-        ];
+        var records = [];
 
         // Fonction pour récupérer et afficher les ID
         function updateRecords() {
@@ -46,7 +39,15 @@
             for (var i = 0; i < fieldIds.length; i++) {
                 var fieldId = fieldIds[i];
                 var promise = $.getJSON("https://api.thingspeak.com/channels/" + channelId + "/fields/" + fieldId + "/last.json?api_key=" + apiKey, function(data) {
-                    records[fieldId - 1].push(data.field1); // Stockage dans le tableau correspondant
+                    records.push({
+                        id: "ID" + (records.length + 1),
+                        field1: data.field1,
+                        field2: data.field2,
+                        field3: data.field3,
+                        field4: data.field4,
+                        field5: data.field5,
+                        field6: data.field6
+                    });
                     updateRecordsTable();
                 }).fail(function() {
                     console.error("Erreur lors de la récupération des données pour le champ", fieldId);
@@ -62,16 +63,17 @@
             var tbody = $("#records-body");
             tbody.empty();
 
-            for (var i = 0; i < Math.max.apply(Math, records.map(function(arr) {
-                    return arr.length;
-                })); i++) {
+            records.forEach(function(record) {
                 var row = $("<tr>");
-                row.append($("<td>").text("ID" + (i + 1)));
-                for (var j = 0; j < fieldIds.length; j++) {
-                    row.append($("<td>").text(records[j][i] || "")); // Affichage de la valeur à l'index i, ou une chaîne vide si le tableau est plus court
-                }
+                row.append($("<td>").text(record.id));
+                row.append($("<td>").text(record.field1));
+                row.append($("<td>").text(record.field2));
+                row.append($("<td>").text(record.field3));
+                row.append($("<td>").text(record.field4));
+                row.append($("<td>").text(record.field5));
+                row.append($("<td>").text(record.field6));
                 tbody.append(row);
-            }
+            });
         }
 
         // Mise à jour des ID toutes les 5 secondes
